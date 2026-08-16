@@ -1,0 +1,22 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: master
+      - run: zig fmt --check .
+      - run: zig build -Dtarget=aarch64-linux-musl -Dbpf=./test/bootstrap.bpf.c -Duser=./test/bootstrap.c
+      - run: zig build -Dtarget=x86_64-linux-musl -Dbpf=./test/bootstrap.bpf.c -Duser=./test/bootstrap.c
+      - run: zig build -Dtarget=aarch64-linux-gnu -Dbpf=./test/bootstrap.bpf.c -Duser=./test/bootstrap.c
+      - run: zig build -Dtarget=x86_64-linux-gnu -Dbpf=./test/bootstrap.bpf.c -Duser=./test/bootstrap.c
