@@ -37,7 +37,7 @@ zig-out/
 
 And to cross-compile: Append `-Dtarget=<arch>-<os>-<libc>` (Use `zig targets` to find out all the supported combinations).
 
-BTW, `-Dbpf` and `-Duser` can be specified multiple time to support multiple C files.
+BTW, `-Dbpf` and `-Duser` can be specified multiple times for each C source file.
 
 ## Bonus
 
