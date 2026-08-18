@@ -22,5 +22,29 @@ You only need to
 
 Then, you're good to go.
 
-To compile: `zig build -Dbpf=<path/to/your/bpf_program.c> -Duser=<path/to/your/userspace_program.c>`,
-To cross-compile: Adding `-Dtarget=xxx` to above command.
+To compile: `zig build -Dbpf=<path/to/your/bpf_program.c> -Duser=<path/to/your/userspace_program.c>`, then all you need is under `./zig-out`:
+
+```
+zig-out/
+├── bin
+│   ├── bootstrap <= User-space program
+│   └── bpftool
+├── include
+│   └── bootstrap.skel.h
+└── obj
+    └── bootstrap.bpf.o <= BPF program
+```
+
+And to cross-compile: Append `-Dtarget=<arch>-<os>-<libc>` (Use `zig targets` to find out all the supported combinations).
+
+BTW, `-Dbpf` and `-Duser` can be specified multiple time to support multiple C files.
+
+## Bonus
+
+- The first time you run `zig build`, all the prerequsites' source codes will be downloaded under `zig-pkg` directory, then you can build offline from now on. You could even transfer the whole directory to another machine to build there without network.
+
+- `-Dbpf` can be used alone without `-Duser`, then it will only compile BPF program.
+
+- Similarly `-Duser` can also be used alone to build a userspace program (but the generated binary will contain libbpf anyway).
+
+Have fun!

@@ -49,6 +49,8 @@ fn build_bpf(b: *std.Build, target: std.Build.ResolvedTarget, src_paths: []const
         run_zig_cc.expectExitCode(0);
 
         obj_paths[i] = raw_obj_path;
+
+        b.getInstallStep().dependOn(&b.addInstallFileWithDir(raw_obj_path, .{ .custom = "obj" }, b.fmt("{s}.o", .{name})).step);
     }
 
     const bpftool = build_bpftool(b);
@@ -64,7 +66,7 @@ fn build_bpf(b: *std.Build, target: std.Build.ResolvedTarget, src_paths: []const
     for (obj_paths) |obj_path| {
         run_bpftool_obj.addFileArg(obj_path);
     }
-    b.getInstallStep().dependOn(&b.addInstallBinFile(final_obj_path, b.fmt("{s}.o", .{output_bpf_program_name})).step);
+    b.getInstallStep().dependOn(&b.addInstallFileWithDir(final_obj_path, .{ .custom = "obj" }, b.fmt("{s}.o", .{output_bpf_program_name})).step);
 
     // Generate skeleton header
     const run_bpftool_skel = b.addRunArtifact(bpftool);
@@ -72,7 +74,7 @@ fn build_bpf(b: *std.Build, target: std.Build.ResolvedTarget, src_paths: []const
     run_bpftool_skel.addFileArg(final_obj_path);
     const skeleton_basename = std.fs.path.stem(output_bpf_program_name); // strip one more time
     const stdout = run_bpftool_skel.captureStdOut(.{ .basename = b.fmt("{s}.skel.h", .{skeleton_basename}) });
-    b.getInstallStep().dependOn(&b.addInstallBinFile(stdout, b.fmt("{s}.skel.h", .{skeleton_basename})).step);
+    b.getInstallStep().dependOn(&b.addInstallHeaderFile(stdout, b.fmt("{s}.skel.h", .{skeleton_basename})).step);
 
     return stdout;
 }
