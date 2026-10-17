@@ -1,4 +1,5 @@
 const std = @import("std");
+const zig_pkgs = @import("zig_pkgs");
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
@@ -19,7 +20,7 @@ pub fn build(b: *std.Build) !void {
 
 fn build_bpf(b: *std.Build, target: std.Build.ResolvedTarget, src_paths: []const []const u8) error{OutOfMemory}!std.Build.LazyPath {
     const vmlinux_dep = b.dependency("vmlinux", .{});
-    const libbpf_dep = b.dependency("libbpf", .{});
+    const zig_pkgs_dep = b.dependency("zig_pkgs", .{ .include = .libbpf });
     const endian = switch (target.result.cpu.arch.endian()) {
         .big => "eb",
         .little => "el",
@@ -41,7 +42,7 @@ fn build_bpf(b: *std.Build, target: std.Build.ResolvedTarget, src_paths: []const
         run_zig_cc.addArg("-fno-unwind-tables"); // Otherwise .eh_frame section will be generated which causes object linker failure
         run_zig_cc.addArgs(&.{ "-target", "bpf" ++ endian ++ "-freestanding" });
         run_zig_cc.addArgs(&.{b.fmt("-D__TARGET_ARCH_{s}", .{arch})});
-        run_zig_cc.addDirectoryArg2(libbpf_dep.artifact("bpf").getEmittedIncludeTree(), .{ .prefix = "-I" });
+        run_zig_cc.addDirectoryArg2(zig_pkgs_dep.artifact("bpf").getEmittedIncludeTree(), .{ .prefix = "-I" });
         run_zig_cc.addDirectoryArg2(vmlinux_dep.path(b.fmt("include/{s}", .{arch})), .{ .prefix = "-I" });
         run_zig_cc.addArg("-c");
         run_zig_cc.addFileArg(b.graph.cwdRelativePath(src_path));
@@ -83,9 +84,11 @@ fn build_bpftool(b: *std.Build) *std.Build.Step.Compile {
     const target_host = std.Build.resolveTargetQuery(b, .{});
     const optimize: std.builtin.OptimizeMode = .Debug;
     const src_dep = b.dependency("bpftool", .{});
-    const libbpf_dep = b.dependency("libbpf", .{ .target = target_host, .optimize = optimize });
-    const zlib_dep = b.dependency("zlib", .{ .target = target_host, .optimize = optimize });
-    const libelf_dep = b.dependency("libelf", .{ .target = target_host, .optimize = optimize });
+    const zig_pkgs_dep = b.dependency("zig_pkgs", .{
+        .target = target_host,
+        .optimize = optimize,
+        .include = &[_]zig_pkgs.Artifact{ .libbpf, .zlib, .libelf },
+    });
 
     const root_module = b.createModule(.{
         .target = target_host,
@@ -105,9 +108,9 @@ fn build_bpftool(b: *std.Build) *std.Build.Step.Compile {
             "-DBPFTOOL_WITHOUT_CRYPTO", // Not support signing yet, as it depends on libcrypto
         },
     });
-    root_module.linkLibrary(libbpf_dep.artifact("bpf"));
-    root_module.linkLibrary(libelf_dep.artifact("elf"));
-    root_module.linkLibrary(zlib_dep.artifact("z"));
+    root_module.linkLibrary(zig_pkgs_dep.artifact("bpf"));
+    root_module.linkLibrary(zig_pkgs_dep.artifact("elf"));
+    root_module.linkLibrary(zig_pkgs_dep.artifact("z"));
     root_module.addIncludePath(src_dep.path("include"));
 
     const bin = b.addExecutable(.{ .name = "bpftool", .root_module = root_module });
@@ -116,13 +119,17 @@ fn build_bpftool(b: *std.Build) *std.Build.Step.Compile {
 }
 
 fn build_user(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.OptimizeMode, src_paths: []const []const u8, skeleton_header: ?std.Build.LazyPath) void {
-    const libbpf_dep = b.dependency("libbpf", .{ .target = target, .optimize = optimize });
+    const zig_pkgs_dep = b.dependency("zig_pkgs", .{
+        .target = target,
+        .optimize = optimize,
+        .include = .libbpf,
+    });
     const root_module = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .link_libc = true,
     });
-    root_module.linkLibrary(libbpf_dep.artifact("bpf"));
+    root_module.linkLibrary(zig_pkgs_dep.artifact("bpf"));
     if (skeleton_header) |p| {
         root_module.addIncludePath(p.dirname());
     }
