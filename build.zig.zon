@@ -11,11 +11,11 @@
             .hash = "N-V-__8AAHX4eQB6q8t9nyLRAxGtWNo8WtrmgshFkf0984rY",
         },
         .zig_pkgs = .{
-            .url = "https://github.com/tw4452852/zig-pkgs/archive/6e8746639da65c7e0a8fe646d9eaca18103ad438.tar.gz",
-            .hash = "zig_pkgs-0.0.1-BagTnk2OAAD_r5zZvg-iB0Jfu52S-x98B7fHFUACCKVE",
+            .url = "https://github.com/tw4452852/zig-pkgs/archive/c356f4be29602562f0ec547c9d55c5b3bc80e46a.tar.gz",
+            .hash = "zig_pkgs-0.0.1-BagTnj6OAAB8tnvp3Ba4rH7ZoOZt3eCtZTGB7C_Uka3x",
         },
     },
-    .minimum_zig_version = "0.18.0-dev.253+16d31ceed",
+    .minimum_zig_version = "0.18.0-dev.367+187d0bf9e",
     .paths = .{""},
     .fingerprint = 0xb5ae1bae41c8a1ba,
 }

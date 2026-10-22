@@ -3,7 +3,7 @@ const zig_pkgs = @import("zig_pkgs");
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{}) orelse .debug;
+    const optimize = b.standardOptimizeOption(.{});
 
     const bpf_path = b.option([]const []const u8, "bpf", "Path to BPF program");
     const user_path = b.option([]const []const u8, "user", "Path to user-space program");
