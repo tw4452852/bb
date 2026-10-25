@@ -11,8 +11,8 @@
             .hash = "N-V-__8AAHX4eQB6q8t9nyLRAxGtWNo8WtrmgshFkf0984rY",
         },
         .zig_pkgs = .{
-            .url = "https://github.com/tw4452852/zig-pkgs/archive/c356f4be29602562f0ec547c9d55c5b3bc80e46a.tar.gz",
-            .hash = "zig_pkgs-0.0.1-BagTnj6OAAB8tnvp3Ba4rH7ZoOZt3eCtZTGB7C_Uka3x",
+            .url = "https://github.com/tw4452852/zig-pkgs/archive/8e3411b3cdd8eb0b62236eae19e5e5db6d4dbf39.tar.gz",
+            .hash = "zig_pkgs-0.0.1-BagTnj6OAAAqLRmPyQczgghIUWp0XQsutTjZHbKKAZIz",
         },
     },
     .minimum_zig_version = "0.18.0-dev.367+187d0bf9e",
