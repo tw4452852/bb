@@ -15,7 +15,7 @@
             .hash = "zig_pkgs-0.0.1-BagTnj6OAAAqLRmPyQczgghIUWp0XQsutTjZHbKKAZIz",
         },
     },
-    .minimum_zig_version = "0.18.0-dev.567+7f0281900",
+    .minimum_zig_version = "0.18.0-dev.610+720939f8c",
     .paths = .{""},
     .fingerprint = 0xb5ae1bae41c8a1ba,
 }

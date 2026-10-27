@@ -8,10 +8,6 @@ pub fn build(b: *std.Build) !void {
     const bpf_path = b.option([]const []const u8, "bpf", "Path to BPF program");
     const user_path = b.option([]const []const u8, "user", "Path to user-space program");
 
-    // TODO: once zig support indirect lazy dependency, remove this WA!
-    _ = b.dependency("zig_pkgs", .{ .include = .libbpf });
-    if (b.graph.unlazy_deps.count() != 0) return error.LazyDependencyNeeded;
-
     var skeleton_header: ?std.Build.LazyPath = null;
     if (bpf_path) |p| {
         skeleton_header = try build_bpf(b, target, p);
